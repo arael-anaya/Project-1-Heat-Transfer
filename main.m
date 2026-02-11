@@ -51,25 +51,33 @@ hold on
 grid on
 
 ax = gca;
-colors = ax.ColorOrder;   % MATLAB default color cycle
+colors = ax.ColorOrder;
 
-% Thorium region (continuous)
+plot_handles = gobjects(1,length(q_dot_th));
+
 for i = 1:length(q_dot_th)
+
     color = colors(mod(i-1, size(colors,1)) + 1, :);
 
-    plot(r_th*1000, T_th(i,:), ...
+    % Thorium curve
+    plot_handles(i) = plot(r_th*1000, T_th(i,:), ...
         'LineWidth', 2, ...
-        'Color', color)
+        'Color', color);
 
-    % Graphite + coolant nodes
-    plot([r_2, r_3]*1000, [T_2(i), T_3(i)],'LineWidth', 2, 'Color', color)
+    % Graphite + coolant segment (no legend entry)
+    plot([r_2, r_3]*1000, [T_2(i), T_3(i)], ...
+        'LineWidth', 2, ...
+        'Color', color, ...
+        'HandleVisibility','off');
 end
 
 xlabel('Radius $r$ [mm]', 'Interpreter', 'latex')
 ylabel('Temperature $T$ [K]', 'Interpreter', 'latex')
 title('Radial Temperature Distribution $T(r)$', 'Interpreter', 'latex')
 
-hold off
+
+
+
 
 % Preallocate temperature arrays
 T1 = zeros(1, length(q_dot_th));  % Inner radius temperature
@@ -89,6 +97,19 @@ for i = 1:length(q_dot_th)
     % Tmax occurs at r1 in this configuration
     Tmax(i) = T1(i);
 end
+
+legend_strings = strings(1,length(q_dot_th));
+
+for i = 1:length(q_dot_th)
+    legend_strings(i) = sprintf('$\\dot{q}_{th} = %.1e\\ \\mathrm{W/m^3}$', q_dot_th(i));
+end
+
+legend(plot_handles(end:-1:1), ...
+       legend_strings(end:-1:1), ...
+       'Interpreter','latex', ...
+       'Location','northwest')
+
+
 
 % Create a table
 TempTable = table(q_dot_th.', T1.', T2_vals.', T3_vals.', Tmax.', ...
