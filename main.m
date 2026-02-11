@@ -42,7 +42,7 @@ end
 
 
 %Plotting
-%Used ChatGPT to quickly create plots and tables 
+%Used ChatGPT to quickly plot the two functions, create plot legend, and table
 
 
 
@@ -54,6 +54,7 @@ ax = gca;
 colors = ax.ColorOrder;
 
 plot_handles = gobjects(1,length(q_dot_th));
+r_gr = linspace(r_2, r_3, 200);
 
 for i = 1:length(q_dot_th)
 
@@ -65,10 +66,16 @@ for i = 1:length(q_dot_th)
         'Color', color);
 
     % Graphite + coolant segment (no legend entry)
-    plot([r_2, r_3]*1000, [T_2(i), T_3(i)], ...
-        'LineWidth', 2, ...
-        'Color', color, ...
-        'HandleVisibility','off');
+    % Graphite temperature distribution (LOGARITHMIC — correct)
+T_gr = T_2(i) + (T_3(i) - T_2(i)) .* ...
+       (log(r_gr/r_2) ./ log(r_3/r_2));
+
+plot(r_gr*1000, T_gr, ...
+     'LineWidth', 2, ...
+     'Color', color, ...
+     'HandleVisibility','off');
+
+
 end
 
 xlabel('Radius $r$ [mm]', 'Interpreter', 'latex')
@@ -107,7 +114,7 @@ end
 legend(plot_handles(end:-1:1), ...
        legend_strings(end:-1:1), ...
        'Interpreter','latex', ...
-       'Location','northwest')
+       'Location','northeast')
 
 
 
