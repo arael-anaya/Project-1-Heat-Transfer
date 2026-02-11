@@ -69,3 +69,30 @@ ylabel('Temperature $T$ [K]', 'Interpreter', 'latex')
 title('Radial Temperature Distribution $T(r)$', 'Interpreter', 'latex')
 
 hold off
+
+% Preallocate temperature arrays
+T1 = zeros(1, length(q_dot_th));  % Inner radius temperature
+T2_vals = T_2;                    % Interface temperature
+T3_vals = T_3;                    % Outer surface temperature
+Tmax = zeros(1, length(q_dot_th)); % Maximum temperature (at inner radius)
+
+% Calculate T1 and Tmax for each q_dot_th
+for i = 1:length(q_dot_th)
+    % Inner radius temperature (r1)
+    T1(i) = -(q_dot_th(i)/(4*k_th))*r_1^2 ...
+            + (q_dot_th(i)/(2*k_th))*r_1^2*log(r_1) ...
+            + T_2(i) ...
+            + (q_dot_th(i)/(4*k_th))*r_2^2 ...
+            - (q_dot_th(i)/(2*k_th))*r_1^2*log(r_2);
+
+    % Tmax occurs at r1 in this configuration
+    Tmax(i) = T1(i);
+end
+
+% Create a table
+TempTable = table(q_dot_th.', T1.', T2_vals.', T3_vals.', Tmax.', ...
+    'VariableNames', {'q_dot','T1 [K]','T2 [K]','T3 [K]','Tmax [K]'});
+
+% Display the table
+disp('Temperature Table:')
+disp(TempTable)
